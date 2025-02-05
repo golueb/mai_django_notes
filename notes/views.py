@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
@@ -5,12 +6,13 @@ from .forms import SignUpForm, LoginForm
 
 from .models import Category, Note
 
+@login_required
 def home(request):
     return render(request, 'notes/index.html', {
         'categories': Category.objects.all()
     })
 
-
+@login_required
 def category_detail(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     return render(request, 'notes/detail.html', {
