@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+        <html>
+        <head><title>Login</title></head>
+        <body>
+         <h1>Login</h1>
+         {% for m in messages %}
+           <p style="color:green;">{{ m }}</p>
+         {% endfor %}
+         <form method="POST">
+           {% csrf_token %}
+           {{ form.as_p }}
+           <button>Login</button>
+         </form>
+         <a href="{% url 'notes:home' %}">Home</a>
+         <a href="{% url 'notes:signup' %}">Register</a>
+        </body>
+        </html>

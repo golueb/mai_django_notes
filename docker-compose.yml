@@ -1,0 +1,6 @@
+services:
+  django:
+    build: .
+    container_name: django_notes
+    ports:
+      - "8000:8000"

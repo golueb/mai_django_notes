@@ -1,0 +1,97 @@
+{% extends "notes/base.html" %}
+{% block title %}
+{{ category.title }} - все заметки
+{% endblock %}
+{% block content %}
+
+
+<div x-data="getNotes()">
+    <h3>заметки в категории {{ category.title }}</h3>
+    <form id="note-form">
+        {% csrf_token %}
+    </form>
+    <div>
+            <input x-model="newNote"  placeholder="Текст заметки">
+            <button @click="addNote(newNote, {{ category.id }} )" >Добавить заметку</button>
+    </div>
+<div class="container pt-3">
+ <div>
+    <div>
+       <template x-for="note in notes">
+        <div>
+          <div class="card h-100">
+            <div class="card-header">
+                <button @click="removeNote(note.id)"> Удалить</button></div>
+                <div>
+                  <p x-text="note.title" ></p>
+                </div>
+               <div class="card-footer">
+                <button @click="updateNote(note.id, false)"
+                        x-show="note.status == 'True'"> Сделано</button>
+                <button @click="updateNote(note.id, true)"
+                        x-show="note.status == 'False'"> В процессе</button>
+                </div>
+         </div>
+        </div>
+       </template>
+    </div>
+</div>
+</div>
+</div>
+<a href="{% url 'notes:home' %}">Назад</a>
+
+<script>
+
+const csrftoken = document.querySelector('#note-form > input').value;
+
+
+const getNotes = () => {
+    return {
+        newNote: '',
+        notes: [
+            {% for note in category.notes.all %}
+            { 'title': '{{ note.title }}', 'id': '{{ note.id }}', 'status': '{{ note.completed }}' },
+            {% endfor %}
+        ]
+    }
+};
+
+const addNote = async (title, categoryId) => {
+    try {
+    const res = await axios.post('/api/notes',
+        { title, category_id: categoryId },
+        { headers: { 'X-CSRFToken': csrftoken }}
+        );
+    location.reload();
+      } catch (e) {
+        console.error(e);
+      }
+};
+
+const removeNote = async noteId => {
+    try {
+    const res = await axios.delete('/api/notes/' + noteId,
+        { headers: { 'X-CSRFToken': csrftoken }}
+        );
+    location.reload();
+      } catch (e) {
+        console.error(e);
+      }
+};
+
+const updateNote = async (noteId, noteStatus) => {
+    try {
+    const res = await axios.patch('/api/notes/' + noteId,
+        { id: noteId, completed: noteStatus},
+        { headers: { 'X-CSRFToken': csrftoken }}
+        );
+    location.reload();
+      } catch (e) {
+        console.error(e);
+      }
+};
+
+
+</script>
+
+{% endblock %}
